@@ -1,0 +1,5 @@
+*.exe
+bower_components/
+node_modules/
+.DS_STORE
+npm-debug.log
