@@ -7,9 +7,9 @@ server.connection({
 
 server.route({
     method: 'GET',
-    path: '/',
+    path: '/test',
     handler: function (request, reply) {
-        reply('WASAAAAAAAAAAAAAAAAAAAAAAP');
+        reply({name:'Testing route test'});
     }
 });
 
