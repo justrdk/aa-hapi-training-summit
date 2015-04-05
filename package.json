@@ -23,6 +23,9 @@
   },
   "homepage": "https://github.com/evilryu/aa-hapi-summit",
   "dependencies": {
-    "hapi": "^8.4.0"
-  }
+    "boom": "^2.7.0",
+    "hapi": "^8.4.0",
+    "hapi-mongodb": "^3.0.0"
+  },
+  "devDependencies": {}
 }
