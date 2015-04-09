@@ -1,22 +1,35 @@
 var Hapi = require('hapi');
 
+var server = new Hapi.Server();
+
+var dbConfig = {
+	"url": "mongodb://localhost:27017/aa-summit",
+	"settings": {
+		"db": {
+			"native_parser": false //native parser is deprecated let's set this to false :)
+		}
+	}
+};
+
 var users = {
 	test: {
-		id: 'test',
+		id: '1',
 		password: 'password',
 		name: 'TEST'
 	}
 };
 
-var home = function(request, reply) {
-
-	reply('<html><head><title>Login page</title></head><body><h3>Welcome ' + request.auth.credentials.name + '!</h3><br/><form method="get" action="/logout">' + '<input type="submit" value="Logout">' + '</form></body></html>');
-};
-
 var login = function(request, reply) {
 
 	if (request.auth.isAuthenticated) {
-		return reply.redirect('/');
+		return reply({
+			success: true,
+			user: {
+				id: '1',
+				password: 'password',
+				name: 'TEST'
+			}
+		});
 	}
 
 	var message = '';
@@ -41,20 +54,28 @@ var login = function(request, reply) {
 	if (request.method === 'get' ||
 		message) {
 
-		return reply('<html><head><title>Login page</title></head><body>' + (message ? '<h3>' + message + '</h3><br/>' : '') + '<form method="post" action="/login">' + 'Username: <input type="text" name="username"><br>' + 'Password: <input type="password" name="password"><br/>' + '<input type="submit" value="Login"></form></body></html>');
+		return reply({
+			success: true,
+			message: message
+		});
 	}
 
 	request.auth.session.set(account);
-	return reply.redirect('/');
+	return reply({
+		success: true,
+		user: account
+	});
 };
 
 var logout = function(request, reply) {
 
 	request.auth.session.clear();
-	return reply.redirect('/');
+	reply({
+		success: true
+	});
 };
 
-var server = new Hapi.Server();
+
 server.connection({
 	port: 3000
 });
@@ -64,19 +85,12 @@ server.register(require('hapi-auth-cookie'), function(err) {
 	server.auth.strategy('session', 'cookie', {
 		password: 'secret',
 		cookie: 'sid-example',
-		redirectTo: '/login',
 		isSecure: false
 	});
 });
 
+
 server.route([{
-	method: 'GET',
-	path: '/',
-	config: {
-		handler: home,
-		auth: 'session'
-	}
-}, {
 	method: ['GET', 'POST'],
 	path: '/login',
 	config: {
@@ -98,6 +112,32 @@ server.route([{
 		handler: logout,
 		auth: 'session'
 	}
+}, {
+	method: "GET",
+	path: "/{param*}",
+	handler: {
+		directory: {
+			path: "./public",
+
+		}
+	},
+	config: {
+		auth: false
+	}
 }]);
 
-server.start();
+
+var plugins = [{
+	register: require('hapi-mongodb'),
+	options: dbConfig
+}];
+
+
+server.register(plugins, function(err) {
+	if (err) {
+		throw err;
+	}
+	server.start(function() {
+		console.log('info', 'Server running at ', server.info.uri);
+	});
+});
