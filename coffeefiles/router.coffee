@@ -20,7 +20,7 @@ require ['can', 'scripts/loginComponent', 'scripts/homeComponent', 'scripts/logi
 
             deferred.then (response) ->
                 if response.success is false
-                    can.route.attr(route:'login')
+                    can.route.attr 'route', 'login'
                 else
                     self.options.userMap.attr 'user', response.name
             ,(xhr) ->
