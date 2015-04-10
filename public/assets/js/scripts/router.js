@@ -1,10 +1,35 @@
 (function() {
   'use strict';
-  require(['can', 'scripts/loginComponent', 'scripts/homeComponent'], function(can, LoginComponent, HomeComponent) {
+  require(['can', 'scripts/loginComponent', 'scripts/homeComponent', 'scripts/loginModel'], function(can, LoginComponent, HomeComponent, LoginModel) {
     var Router;
     Router = can.Control.extend({
       init: function(element, options) {
-        return this.options.user = can.compute({});
+        var self;
+        this.options.userMap = new can.Map({
+          user: ''
+        });
+        self = this;
+        return can.route.bind('change', function(ev, attr, how, newVal, oldVal) {
+          if (newVal !== 'login') {
+            return self.checkUserAuthentication();
+          }
+        });
+      },
+      checkUserAuthentication: function() {
+        var deferred, self;
+        self = this;
+        deferred = LoginModel.findOne();
+        return deferred.then(function(response) {
+          if (response.success === false) {
+            return can.route.attr({
+              route: 'login'
+            });
+          } else {
+            return self.options.userMap.attr('user', response.name);
+          }
+        }, function(xhr) {
+          return console.log('error on request');
+        });
       },
       'route': function(data) {
         return window.location.hash = '#!login';
@@ -15,10 +40,11 @@
         return can.$('.main-container').html(component());
       },
       'home route': function(data) {
-        var component;
-        component = can.mustache("<home-component username='user'></home-component>");
+        var component, self;
+        self = this;
+        component = can.mustache("<home-component user='user'></home-component>");
         return can.$('.main-container').html(component({
-          user: this.options.user().name
+          user: self.options.userMap
         }));
       }
     });

@@ -14,8 +14,9 @@
           deferred = LoginModel.create(this.attr('user').serialize());
           return deferred.then(function(response) {
             if (response.success === true) {
-              can.$('body').data().controls[0].options.user(response.user);
-              return window.location.hash = '#!home';
+              return can.route.attr({
+                'route': 'home'
+              });
             }
           }, function(xhr) {
             return console.log('error on request');

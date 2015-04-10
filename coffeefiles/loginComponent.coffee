@@ -13,7 +13,6 @@ define ['can', 'scripts/loginModel'], (can, LoginModel) ->
 				deferred = LoginModel.create(@attr('user').serialize())
 				deferred.then (response) ->
 					if response.success is true
-						can.$('body').data().controls[0].options.user(response.user)
-						window.location.hash = '#!home'
+						can.route.attr('route' : 'home')
 				, (xhr) ->
 					console.log 'error on request'

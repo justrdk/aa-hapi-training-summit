@@ -1,6 +1,6 @@
 'use strict'
 
-define ['can'], (can) ->
+define ['can', 'scripts/loginModel'], (can, LoginModel) ->
 
 	can.Component.extend
 		tag: 'home-component'

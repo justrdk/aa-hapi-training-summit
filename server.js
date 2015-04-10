@@ -75,6 +75,20 @@ var logout = function(request, reply) {
 	});
 };
 
+var getAuthenticatedUser = function(request, reply) {
+	console.log(request.auth.credentials);
+	if (request.auth.credentials && request.auth.credentials.name) {
+		reply({
+			success: true,
+			name: request.auth.credentials.name
+		});
+	} else {
+		reply({
+			success: false,
+			message: 'no user authenitcated'
+		});
+	}
+};
 
 server.connection({
 	port: 3000
@@ -88,7 +102,6 @@ server.register(require('hapi-auth-cookie'), function(err) {
 		isSecure: false
 	});
 });
-
 
 server.route([{
 	method: ['GET', 'POST'],
@@ -114,6 +127,16 @@ server.route([{
 	}
 }, {
 	method: "GET",
+	path: "/getAuthenticatedUser",
+	handler: getAuthenticatedUser,
+	config: {
+		auth: {
+			mode: "optional",
+			strategy: "session"
+		}
+	}
+}, {
+	method: "GET",
 	path: "/{param*}",
 	handler: {
 		directory: {
@@ -126,12 +149,10 @@ server.route([{
 	}
 }]);
 
-
 var plugins = [{
 	register: require('hapi-mongodb'),
 	options: dbConfig
 }];
-
 
 server.register(plugins, function(err) {
 	if (err) {
