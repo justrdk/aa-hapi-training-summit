@@ -4,13 +4,6 @@ module.exports = (grunt) ->
 
 	grunt.initConfig
 		pkg: '<json:package.json>'
-		requirejs:
-			compile:
-				options:
-					baseUrl: 'public/assets/js/'
-					mainConfigFile : 'public/assets/js/main.js'
-					out: 'public/assets/js/main-optimized.js'
-					name : 'main'
 		coffee:
 			dist:
 				files: [
@@ -31,9 +24,7 @@ module.exports = (grunt) ->
 
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch')
-	grunt.loadNpmTasks('grunt-contrib-requirejs')
 	grunt.loadNpmTasks('grunt-contrib-coffee')
 
 	grunt.registerTask 'deploywatch', ['clean', 'coffee','watch']
 	grunt.registerTask 'deploy', ['clean', 'coffee']
-	grunt.registerTask 'deployprod', ['clean', 'coffee', 'requirejs']

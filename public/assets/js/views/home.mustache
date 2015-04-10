@@ -2,8 +2,26 @@
 	<div class="container">
 		<div class="row">
 			<div class="page-header">
-				 <h2 can-click="getUser">Welcome, {{user.user}}</h2>
+				<h2 can-click="getUser">Welcome, {{usermap.user}}</h2>
+				<button class="btn btn-success btn-hg" can-click="getAllDevelopers">Show all Developers</button>
+				<button class="btn btn-danger btn-hg" can-click="logout">Log Out</button>
 			</div>
+		</div>
+		<div class="row">
+			<h2 class="text-center">Developers</h2>
+		</div>
+		<div class="row">
+			{{#each developers}}
+				<div class="col-md-4">
+					<div class="panel panel-primary">
+						<div class="panel-heading"><h3>{{name}}</h3>
+						</div>
+						<div class="panel-body">
+							Fav Language: <strong>{{favLanguage}}</strong>
+						</div>
+					</div>
+				</div>
+			{{/each}}
 		</div>
 	</div>
 </section>

@@ -62,3 +62,7 @@
 .btn-custom:hover, .btn-custom:focus {
     color: #fff;
 }
+
+.panel-heading > h3{
+    color:#fff;
+}

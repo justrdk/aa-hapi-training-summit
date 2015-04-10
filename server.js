@@ -1,5 +1,4 @@
 var Hapi = require('hapi');
-
 var server = new Hapi.Server();
 
 var dbConfig = {
@@ -15,7 +14,7 @@ var users = {
 	test: {
 		id: '1',
 		password: 'password',
-		name: 'TEST'
+		name: 'Osman'
 	}
 };
 
@@ -76,7 +75,6 @@ var logout = function(request, reply) {
 };
 
 var getAuthenticatedUser = function(request, reply) {
-	console.log(request.auth.credentials);
 	if (request.auth.credentials && request.auth.credentials.name) {
 		reply({
 			success: true,
@@ -90,9 +88,32 @@ var getAuthenticatedUser = function(request, reply) {
 	}
 };
 
+var getAllDevelopers = function(request, reply) {
+	var collection = "developers";
+	var db = request.server.plugins['hapi-mongodb'].db;
+
+	db.collection(collection).find().toArray(function(err, doc) {
+		if (err) {
+			return reply({
+				success: false,
+				error: 'Internal MongoDB error'
+			});
+		}
+		reply({
+			success: true,
+			data: doc
+		});
+	});
+};
+
 server.connection({
 	port: 3000
 });
+
+var plugins = [{
+	register: require('hapi-mongodb'),
+	options: dbConfig
+}];
 
 server.register(require('hapi-auth-cookie'), function(err) {
 
@@ -137,6 +158,16 @@ server.route([{
 	}
 }, {
 	method: "GET",
+	path: "/getAllDevelopers",
+	handler: getAllDevelopers,
+	config: {
+		auth: {
+			mode: "required",
+			strategy: "session"
+		}
+	}
+}, {
+	method: "GET",
 	path: "/{param*}",
 	handler: {
 		directory: {
@@ -148,11 +179,6 @@ server.route([{
 		auth: false
 	}
 }]);
-
-var plugins = [{
-	register: require('hapi-mongodb'),
-	options: dbConfig
-}];
 
 server.register(plugins, function(err) {
 	if (err) {

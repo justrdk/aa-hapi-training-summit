@@ -5,10 +5,10 @@
     Router = can.Control.extend({
       init: function(element, options) {
         var self;
+        self = this;
         this.options.userMap = new can.Map({
           user: ''
         });
-        self = this;
         return can.route.bind('change', function(ev, attr, how, newVal, oldVal) {
           if (newVal !== 'login') {
             return self.checkUserAuthentication();
@@ -32,7 +32,7 @@
         });
       },
       'route': function(data) {
-        return window.location.hash = '#!login';
+        return can.route.attr('route', 'login');
       },
       'login route': function(data) {
         var component;
@@ -42,7 +42,7 @@
       'home route': function(data) {
         var component, self;
         self = this;
-        component = can.mustache("<home-component user='user'></home-component>");
+        component = can.mustache("<home-component usermap='user'></home-component>");
         return can.$('.main-container').html(component({
           user: self.options.userMap
         }));
